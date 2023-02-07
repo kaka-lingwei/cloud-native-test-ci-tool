@@ -152,7 +152,7 @@ spec:
   restartPolicy: Never
   containers:
   - name: test-${ns}
-    image: cn-cicd-repo-registry.cn-hangzhou.cr.aliyuncs.com/cicd/test-runner:v0.0.8
+    image: cn-cicd-repo-registry.cn-hangzhou.cr.aliyuncs.com/cicd/test-runner:v0.0.9
     env:
     - name: CODE
       value: ${TEST_CODE_GIT}
