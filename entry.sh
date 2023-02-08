@@ -223,7 +223,7 @@ if [ ${ACTION} == "test" ]; then
       is_source_exist=`kubectl exec -i test-${ns} -n ${ns} -- ls /root | grep sourceCode`
       if [ -z "$is_source_exist" ]; then
         echo "sourceCode not exist, copy now"
-        kubectl cp  -n ${ns} sourceCode.tar test-${ns}:/root/sourceCode.tar -n ${ns}
+        kubectl cp  -n ${ns} sourceCode test-${ns}:/root/sourceCode -n ${ns}
       fi
       if [ ! -z "$test_done" ]; then
         echo "Test status: test done"
