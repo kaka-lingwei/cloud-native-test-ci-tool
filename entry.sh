@@ -152,7 +152,8 @@ spec:
   restartPolicy: Never
   containers:
   - name: test-${ns}
-    image: cn-cicd-repo-registry.cn-hangzhou.cr.aliyuncs.com/cicd/test-runner:v0.0.9
+    image: cn-cicd-repo-registry.cn-hangzhou.cr.aliyuncs.com/cicd/test-runner:v0.0.10
+    imagePullPolicy: Always
     env:
     - name: CODE
       value: ${TEST_CODE_GIT}
@@ -233,6 +234,85 @@ if [ ${ACTION} == "test" ]; then
             ls
             cd -
             unzip coverageReport.zip
+            ls
+            pwd
+          fi
+        fi
+      fi
+  done
+
+  #kubectl logs test-${ns} -n ${ns}
+
+  exit_code=`kubectl get pod test-${ns} --output="jsonpath={.status.containerStatuses[].state.terminated.exitCode}" -n ${ns}`
+  kubectl delete pod test-${ns} -n ${ns}
+  echo E2E Test exit code: ${exit_code}
+  exit ${exit_code}
+fi
+
+
+if [ ${ACTION} == "coverage" ]; then
+  echo "************************************"
+  echo "*            E2E Test...           *"
+  echo "************************************"
+
+  ns=${env_uuid}
+
+  echo namespace: $ns
+  all_pod_name=`kubectl get pods --no-headers -o custom-columns=":metadata.name" -n ${ns}`
+  ALL_IP=""
+  for pod in $all_pod_name;
+  do
+      POD_HOST=$(kubectl get pod ${pod} --template={{.status.podIP}} -n ${ns})
+      ALL_IP=${pod}:${POD_HOST},${ALL_IP}
+  done
+
+  echo $ALL_IP
+  echo $TEST_CODE_GIT
+  echo $TEST_CMD_BASE
+
+  export ALL_IP
+  export ns
+  is_mvn_cmd=`echo $TEST_CMD_BASE | grep "mvn"`
+  if [ ! -z "$is_mvn_cmd" ]; then
+      TEST_CMD="$TEST_CMD_BASE -DALL_IP=${ALL_IP}"
+  else
+      TEST_CMD=$TEST_CMD_BASE
+  fi
+  echo $TEST_CMD
+  export TEST_CMD
+
+  envsubst < ./testpod.yaml > ./testpod-${ns}.yaml
+  cat ./testpod-${ns}.yaml
+
+  kubectl apply -f ./testpod-${ns}.yaml
+
+  sleep 5
+
+  pod_status=`kubectl get pod test-${ns} --template={{.status.phase}} -n ${ns}`
+
+  while [ "${pod_status}" == "Pending" ] || [ "${pod_status}" == "Running" ]
+  do
+      echo waiting for test-${ns} test done...
+      sleep 5
+      pod_status=`kubectl get pod test-${ns} --template={{.status.phase}} -n ${ns}`
+      test_done=`kubectl exec -i test-${ns} -n ${ns} -- ls /root | grep testdone`
+      is_source_exist=`kubectl exec -i test-${ns} -n ${ns} -- ls /root | grep sourceCode`
+      if [ -z "$is_source_exist" ]; then
+        echo "sourceCode not exist, copy now"
+        kubectl cp  -n ${ns} sourceCode.tar test-${ns}:/root/sourceCode.tar -n ${ns}
+      fi
+      if [ ! -z "$test_done" ]; then
+        echo "Test status: test done"
+        if [ ! -z "$is_mvn_cmd" ]; then
+          if [ ! -d "./test_report" ]; then
+            echo "Copy test reports"
+            mkdir -p test_report
+            cd test_report
+            ls
+            kubectl cp test-${ns}:/root/coverageReport.zip -n ${ns} coverageReport.zip
+            unzip coverageReport.zip
+            ls
+            cd -
             ls
             pwd
           fi

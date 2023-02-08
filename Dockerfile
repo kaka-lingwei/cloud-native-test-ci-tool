@@ -33,6 +33,7 @@ RUN yum install gettext -y
 RUN yum install jq -y
 RUN yum install wget -y
 RUN yum install psmisc -y
+RUN yum install unzip curl -y
 
 # Code file to execute when the docker container starts up (`entry.sh`)
 ENTRYPOINT ["/entry.sh"]
