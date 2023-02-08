@@ -233,7 +233,7 @@ if [ ${ACTION} == "test" ]; then
             mkdir -p test_report
             cd test_report
             ls
-            kubectl cp test-${ns}:/root/onetest/jacoco_coverage/coverageReport.zip -n ${ns} coverageReport.zip
+            kubectl cp test-${ns}:/root/onetest/jacoco_coverage/sourceCode/coverageReport.zip -n ${ns} coverageReport.zip
             unzip coverageReport.zip
             ls
             cd -
