@@ -171,6 +171,7 @@ spec:
       value: ${SOURCE_CODE_BRANCH}
 '
 
+
 echo -e "${TEST_POD_TEMPLATE}" > ./testpod.yaml
 sed -i '1d' ./testpod.yaml
 
