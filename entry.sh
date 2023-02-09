@@ -221,11 +221,11 @@ if [ ${ACTION} == "test" ]; then
       sleep 5
       pod_status=`kubectl get pod test-${ns} --template={{.status.phase}} -n ${ns}`
       test_done=`kubectl exec -i test-${ns} -n ${ns} -- ls /root | grep testdone`
-#      is_source_exist=`kubectl exec -i test-${ns} -n ${ns} -- ls /root | grep sourceCode`
-#      if [ -z "$is_source_exist" ]; then
-#        echo "sourceCode not exist, copy now"
-#        kubectl cp  -n ${ns} sourceCode test-${ns}:/root/sourceCode -n ${ns}
-#      fi
+      is_source_exist=`kubectl exec -i test-${ns} -n ${ns} -- ls /root | grep sourceCode`
+      if [ -z "$is_source_exist" ]; then
+        echo "sourceCode not exist, copy now"
+        kubectl cp  -n ${ns} sourceCode/.  test-${ns}:/root/sourceCode/. -n ${ns}
+      fi
       if [ ! -z "$test_done" ]; then
         echo "Test status: test done"
         if [ ! -z "$is_mvn_cmd" ]; then
