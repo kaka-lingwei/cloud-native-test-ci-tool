@@ -152,7 +152,7 @@ spec:
   restartPolicy: Never
   containers:
   - name: test-${ns}
-    image: cn-cicd-repo-registry.cn-hangzhou.cr.aliyuncs.com/cicd/test-runner:v0.0.12
+    image: cn-cicd-repo-registry.cn-hangzhou.cr.aliyuncs.com/cicd/test-runner:v0.0.11
     imagePullPolicy: Always
     env:
     - name: CODE
