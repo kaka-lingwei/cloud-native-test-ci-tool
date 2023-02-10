@@ -51,7 +51,7 @@ echo '=================Finish Compile Source Code========================='
 cd ~
 
 echo '=================Start Collector Coverage========================='
-nohup java -Xmx512m -DALL_IP=$ALL_IP -DPORT="2023" -DCommitId=$CommitId -Dlogging.path="root/logs" -cp "/root/onetest.collector/lib/*" shell.OneTestShell "$@" > /root/logs/monitor.out 2>&1  &
+nohup java -Xmx512m -DALL_IP=$ALL_IP -DPORT="2023" -DCommitId=$CommitId -Dlogging.path="root/logs" -cp "/root/onetest.collector/lib/*" shell.OneTestShell "$@" > /root/logs/collectCoverage.out 2>&1  &
 echo '=================Finish Collector Coverage========================='
 
 res=$?
