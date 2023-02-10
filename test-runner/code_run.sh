@@ -33,8 +33,8 @@ echo '=================Finish Clone Case Code========================='
 
 echo '=================Start Execute Test Case========================'
 cd code
-cd $CODE_PATH > /root/testlog.txt
-$CMD
+cd $CODE_PATH
+$CMD > /root/testlog.txt
 echo '=================FINISH Execute Test Case========================'
 
 cd ~
@@ -51,8 +51,9 @@ echo '=================Finish Compile Source Code========================='
 cd ~
 
 echo '=================Start Collector Coverage========================='
-nohup java -Xmx512m -DALL_IP=$ALL_IP -DPORT="2023" -DCommitId=$CommitId -Dlogging.path="root/logs" -cp "/root/onetest.collector/lib/*" shell.OneTestShell "$@" > /root/logs/collectCoverage.out 2>&1  &
+nohup java -Xmx512m -DALL_IP=$ALL_IP -DPORT="2023" -DCommitId=$CommitId -Dlogging.path="root/logs" -cp "/root/onetest.collector/lib/*" shell.OneTestShell > /root/logs/collectCoverage.out
 echo '=================Finish Collector Coverage========================='
+
 
 res=$?
 # wait for result collect
