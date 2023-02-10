@@ -25,10 +25,17 @@ RUN chmod 755 /root/code_run.sh
 RUN tar -xvf /root/apache-maven-3.8.7-bin.tar.gz -C /opt/
 COPY settings.xml /opt/apache-maven-3.8.7/conf
 
-RUN yum install unzip curl git epel-release gettext jq wget psmisc -y
+RUN yum install unzip curl git epel-release gettext jq wget psmisc tar -y
 RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 RUN install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 RUN curl -fsSl https://kubevela.net/script/install.sh | bash
 
+
+COPY onetest.collector.tar.gz /root/onetest.collector.tar.gz
+
 WORKDIR /root
+
+RUN tar -xvf /root/onetest.collector.tar.gz -C /root/ && \
+    rm -rf /root/onetest.collector.tar.gz
+
 CMD ["/bin/bash", "-c", "./code_run.sh"]
